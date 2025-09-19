@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 def main():
     load_dotenv()
@@ -24,8 +25,11 @@ def main():
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
 def geneai(content : str, client):
+    messages = [
+    types.Content(role="user", parts=[types.Part(text=content)]),
+    ]
     response = client.models.generate_content(
-    model='gemini-2.0-flash-001', contents=content)
+    model='gemini-2.0-flash-001', contents=messages)
     return response
 
 if __name__ == "__main__":
