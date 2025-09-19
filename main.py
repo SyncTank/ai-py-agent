@@ -13,14 +13,18 @@ def main():
         sys.exit(1)
 
     strprompt = ""
+    verbose_flags = 0 
     for prompt in sys.argv[1::]:
-        strprompt += (prompt + " ")
+        if "--verbose" in prompt:
+            verbose_flags = 1
+        else:
+            strprompt += (prompt + " ")
 
     response = geneai(strprompt, client)
-    print(strprompt)
-    print(response.text)
+    print(f"{response.text}")
 
-    if response.usage_metadata is not None :
+    if response.usage_metadata is not None and verbose_flags == 1:
+        print(f"User prompt: {strprompt}")
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
