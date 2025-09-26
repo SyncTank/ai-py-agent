@@ -3,6 +3,8 @@ import sys
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from functions import get_files_info as gfi
+
 
 def main():
     load_dotenv()
@@ -11,6 +13,9 @@ def main():
 
     if len(sys.argv) <= 1:
         sys.exit(1)
+
+    gfi.get_files_info("calculator")
+    return
 
     strprompt = ""
     verbose_flags = 0 
