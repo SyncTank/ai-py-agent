@@ -1,15 +1,27 @@
-import platform
 import os
 
-def get_files_info(working_directory : str, directory="."):
-    os_name = platform.system()
-    match os_name:
-        case "Linux":
-            print(f"OS : {os_name}")
-            print(f"{os.path.join(directory, working_directory)}")
-        case "Window":
-            print(f"OS : {os_name}")
-            print(f"{os.path.join(working_directory, directory)}")
-        case _:
-            print(f"OS not implemented {os_name}")
-            return
+def get_files_info(working_directory : str, directory: str ="."):
+    try :
+        workDirectory : str = os.path.abspath(working_directory) # parent path where work is done
+    except Exception as error:
+        return f"   Error: {error} {working_directory} could not be found check if directory exists\n"
+
+    try :
+        currentDirectory: str = os.path.join(workDirectory, directory) # full path
+    except Exception as error:
+        return f"   Error: {directory} is not a directory"
+
+    if not (workDirectory in os.path.abspath(currentDirectory)) :
+        return f"   Error: Cannot list {directory} as it is outside the permitted working directory\n"
+
+    list_Files: list = os.listdir(currentDirectory)
+    results = f"Results for {currentDirectory} directory:\n"
+    try :
+        for i in list_Files:
+            sizeInfo = os.path.getsize(currentDirectory+"/"+i)
+            isFile = os.path.isfile(i)
+            results += f"   - {i}: file_size={sizeInfo} bytes, is_dir={isFile}\n"
+    except Exception as error:
+        return f"   Error: {error} \nissue with file check access or make sure it exists\n"
+
+    return results

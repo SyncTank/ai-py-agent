@@ -14,7 +14,7 @@ def main():
     if len(sys.argv) <= 1:
         sys.exit(1)
 
-    gfi.get_files_info("calculator")
+    print(gfi.get_files_info("calculator"))
     return
 
     strprompt = ""
