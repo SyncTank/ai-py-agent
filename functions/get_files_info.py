@@ -1,6 +1,6 @@
 import os
 
-def get_files_info(working_directory : str, directory: str ="."):
+def get_files_info(working_directory : str, directory: str =".")-> str:
     try :
         workDirectory : str = os.path.abspath(working_directory) # parent path where work is done
     except Exception as error:
