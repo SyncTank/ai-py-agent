@@ -16,11 +16,8 @@ def main():
     if len(sys.argv) <= 1:
         sys.exit(1)
 
-    with open(".config.json") as f:
-        limit = json.load(f)
-        globals.LIMIT = limit["WordLimit"]
+    print(get_file_content("calculator","lorem.txt"))
 
-    print(get_file_content("main.py", "."))
     return
 
     strprompt = ""

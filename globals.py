@@ -1,1 +1,2 @@
-LIMIT: int = 10
+FILE_LIMIT: int = 50000
+READ_LIMIT: int = 10000
