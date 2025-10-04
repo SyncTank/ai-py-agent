@@ -1,12 +1,12 @@
 import os
 import sys
-import json
-import globals
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from functions.get_files_info import * 
 from functions.get_file_content import * 
+from functions.write_file import * 
+from functions.run_python_file import * 
 
 def main():
     load_dotenv()
@@ -16,8 +16,7 @@ def main():
     if len(sys.argv) <= 1:
         sys.exit(1)
 
-    print(get_file_content("calculator","lorem.txt"))
-
+    print(run_python_file(".","."))
     return
 
     strprompt = ""
