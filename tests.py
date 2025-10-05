@@ -9,17 +9,17 @@ from functions.run_python_file import *
 
 class Test_run_py(unittest.TestCase):
     def test_run_py_base(self):
-        #print(f"\nTEST 1\n")
+        print(f"\nTEST 1\n")
         assert_info = run_python_file("calculator", "main.py")
         print(f"{assert_info}\n")
 
     def test_run_py_calculator(self):
-        #print(f"\nTEST 2\n")
+        print(f"\nTEST 2\n")
         assert_info = run_python_file("calculator", "main.py", ["3 + 5"])
         print(f"{assert_info}\n")
 
     def test_run_py_tests(self):
-        #print(f"\nTEST 3\n")
+        print(f"\nTEST 3\n")
         assert_info = run_python_file("calculator", "tests.py") 
         print(f"{assert_info}\n")
 

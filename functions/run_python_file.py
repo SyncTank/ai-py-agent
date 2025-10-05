@@ -21,8 +21,12 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
 
     result = ""
     try:
-        process = subprocess.run(args, cwd=filePath, stderr=subprocess.PIPE, stdout=subprocess.PIPE , timeout=globals.TIME_LIMIT, text=True )
-        #results = f'STDOUT: {subprocess.CompletedProcess.stdout}\nSTDERR: {subprocess.CompletedProcess.stderr}'
+        process = subprocess.run(args, cwd=filePath, stderr=subprocess.PIPE, stdout=subprocess.PIPE , timeout=globals.TIME_LIMIT, text=True, check=True )
+        results = f'STDOUT: {process.stdout}\nSTDERR: {process.stderr}'
+        if process.returncode != 0:
+            results += f'\nProcess exited with {process.returncode}'
+        if len(process.stdout) < 2:
+            return f'No output produced'
 
     except Exception as error:
         return f'Error: executing python file {error}'
