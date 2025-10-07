@@ -16,7 +16,10 @@ def main():
     if len(sys.argv) <= 1:
         sys.exit(1)
 
-    print(run_python_file(".","."))
+    print(run_python_file("calculator","main.py"))
+    print(run_python_file("calculator","main.py", ["3 + 5"]))
+    print(run_python_file("calculator","main.py", ["3+5"]))
+    print(run_python_file("calculator","main.py", ["3+5"]))
 
     return
 

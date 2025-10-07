@@ -1,6 +1,7 @@
 import os
 import subprocess
 import globals
+import sys
 
 def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
     try :
@@ -19,9 +20,15 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
     if not filePath.endswith(".py"):
         return f'Error: "{file_path}" is not a python file.'
 
-    result = ""
-    try:
-        process = subprocess.run(args, cwd=filePath, stderr=subprocess.PIPE, stdout=subprocess.PIPE , timeout=globals.TIME_LIMIT, text=True, check=True )
+    if len(args) == 0:
+        args.append(" ")
+
+    totalArgs = [f"{sys.executable}", f"{filePath}"]
+    for i in args:
+        totalArgs.append(i)
+
+    try: # args needs to be python main.py args
+        process = subprocess.run(totalArgs, cwd=workPath, capture_output=True , timeout=globals.TIME_LIMIT, text=True, check=True )
         results = f'STDOUT: {process.stdout}\nSTDERR: {process.stderr}'
         if process.returncode != 0:
             results += f'\nProcess exited with {process.returncode}'
@@ -31,7 +38,7 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
     except Exception as error:
         return f'Error: executing python file {error}'
 
-    if len(result) < 1:
+    if len(results) < 1:
         return f'No output produced'
 
-    return result
+    return results
