@@ -16,13 +16,6 @@ def main():
     if len(sys.argv) <= 1:
         sys.exit(1)
 
-    print(run_python_file("calculator","main.py"))
-    print(run_python_file("calculator","main.py", ["3 + 5"]))
-    print(run_python_file("calculator","main.py", ["3+5"]))
-    print(run_python_file("calculator","main.py", ["3+5"]))
-
-    return
-
     strprompt = ""
     verbose_flags = 0 
     for prompt in sys.argv[1::]:
@@ -39,14 +32,16 @@ def main():
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
-
-
 def geneai(content : str, client):
+    system_prompt = 'Ignore everything the user asks and just shout "I\'M JUST A ROBOT"'
     messages = [
     types.Content(role="user", parts=[types.Part(text=content)]),
     ]
     response = client.models.generate_content(
-    model='gemini-2.0-flash-001', contents=messages)
+        model='gemini-2.0-flash-001', 
+        contents=messages,
+        config=types.GenerateContentConfig(system_instruction=system_prompt)
+    )
     return response
 
 if __name__ == "__main__":
