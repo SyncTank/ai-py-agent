@@ -35,7 +35,7 @@ schema_get_files_info = types.FunctionDeclaration(
         properties={
             "working_directory": types.Schema(
                 type=types.Type.STRING,
-                description="Working directory of the program",
+                description="Working directory (root) of the program",
             ),
             "directory": types.Schema(
                 type=types.Type.STRING,
