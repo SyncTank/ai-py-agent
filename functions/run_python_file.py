@@ -2,6 +2,7 @@ import os
 import subprocess
 import globals
 import sys
+from google.genai import types
 
 def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
     try :
@@ -42,3 +43,29 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
         return f'No output produced'
 
     return results
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Runs a .py/python file specified by a path relative to the working directory, along with optional arguments.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "working_directory": types.Schema(
+                type=types.Type.STRING,
+                description="The root working directory of the program/project.",
+            ),
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The relative path to the Python file (e.g., 'script.py') to be executed, relative to the 'working_directory'.",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                description="A list of string arguments (e.g., ['--debug', '1']) to pass to the python file.",
+                items=types.Schema(
+                    type=types.Type.STRING
+                )
+            ),
+        },
+        required=["working_directory", "file_path"] # Added 'required' fields
+    ),
+)
