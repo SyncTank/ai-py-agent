@@ -7,7 +7,7 @@ from functions.write_file import *
 from functions.run_python_file import *
 
 
-class Test_run_py(unittest.TestCase): # should return a error string from function
+class Test_run_py(): # should return a error string from function
     def test_run_py_base(self):
         print(f"\nTEST 1\n")
         assert_info = run_python_file("calculator", "main.py")

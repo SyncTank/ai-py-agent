@@ -32,23 +32,21 @@ def main():
 
     response = geneai(strprompt.strip(), client)
 
-    try: # nested check cause python
-        if response.candidates:
-            if response.candidates[0].content:
-                if response.candidates[0].content.parts:
-                    for item in response.candidates[0].content.parts:
-                        if item.function_call:
-                            print(f"Calling function: {item.function_call.name}({item.function_call.args})")
-                        elif item.text:
-                            print(f"{item.text}")
+    #if response.function_calls :
+    #    for call in response.function_calls:
+    #        print(f"Calling function: {call.name}({call.args})")
 
-        if response.usage_metadata is not None and verbose_flags == 1:
-            print(f"User prompt: {strprompt}")
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    #if response.text:
+    #    print(response.text)
 
-    except AttributeError as error:
-        print(f"Error: {error} Check the API")
+    if response.parts :
+        for i in response.parts:
+            print(i)
+
+    if response.usage_metadata is not None and verbose_flags == 1:
+        print(f"User prompt: {strprompt}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
 def geneai(content : str, client):
     system_prompt = globals.SYS_PROMPT
