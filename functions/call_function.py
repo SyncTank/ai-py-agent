@@ -1,5 +1,7 @@
 from google.genai import types
 
+function_dict = {}
+
 # arg1 name and .args properties, verbose prints them
 def call_function(function_call_part: types.FunctionCall, verbose=False):
     try:
@@ -15,6 +17,7 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
         # map function from name
         function_name = function_call_part.name
         function_result = ""
+
     except Exception as error:
         return types.Content(
             role="tool",

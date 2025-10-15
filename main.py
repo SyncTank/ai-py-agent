@@ -7,6 +7,7 @@ from functions.get_files_info import *
 from functions.get_file_content import * 
 from functions.write_file import * 
 from functions.run_python_file import * 
+from functions.call_function import * 
 
 available_functions = types.Tool(
     function_declarations=[
@@ -26,10 +27,10 @@ def main():
         sys.exit(1)
 
     strprompt = ""
-    verbose_flags = 0 
+    verbose_flags: bool = False
     for prompt in sys.argv[1::]:
         if "--verbose" in prompt:
-            verbose_flags = 1
+            verbose_flags = True
         else:
             strprompt += (prompt + " ")
 
@@ -41,11 +42,13 @@ def main():
                 if response.candidates[0].content.parts:
                     for item in response.candidates[0].content.parts:
                         if item.function_call:
-                            print(f"Calling function: {item.function_call.name}({item.function_call.args})")
+                            function_call_result = call_function(item.function_call, verbose_flags)
+                            print(f"-> {function_call_result.parts[0].from_function_response("response")}")
+                            #print(f"Calling function: {item.function_call.name}({item.function_call.args})")
                         elif item.text:
                             print(f"{item.text}")
 
-        if response.usage_metadata is not None and verbose_flags == 1:
+        if response.usage_metadata is not None and verbose_flags == True:
             print(f"User prompt: {strprompt}")
             print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
