@@ -43,7 +43,8 @@ def main():
                     for item in response.candidates[0].content.parts:
                         if item.function_call:
                             function_call_result = call_function(item.function_call, verbose_flags)
-                            print(f"-> {function_call_result.parts[0].from_function_response("response")}")
+                            print(f"-> {function_call_result.parts}")
+                            #print(f"-> {function_call_result.parts[0].from_function_response().function_response.response}")
                             #print(f"Calling function: {item.function_call.name}({item.function_call.args})")
                         elif item.text:
                             print(f"{item.text}")

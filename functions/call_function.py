@@ -1,6 +1,15 @@
 from google.genai import types
+from functions.get_files_info import * 
+from functions.get_file_content import * 
+from functions.write_file import * 
+from functions.run_python_file import * 
 
-function_dict = {}
+function_dict = {
+    "get_files_info" : get_files_info,
+    "get_file_content" : get_file_content,
+    "write_file" : write_file,
+    "run_python_file" : run_python_file,
+}
 
 # arg1 name and .args properties, verbose prints them
 def call_function(function_call_part: types.FunctionCall, verbose=False):
@@ -13,17 +22,17 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
         print(f"Error: {error} fail calling function")
 
     # attempt to run function pass the result down
+    function_name = function_call_part.name
+    function_result = ""
     try:
-        # map function from name
-        function_name = function_call_part.name
-        function_result = ""
-
+        if function_name:
+            function_result = function_dict[function_name]("./calculator", function_call_part.args)
     except Exception as error:
         return types.Content(
             role="tool",
             parts=[
                 types.Part.from_function_response(
-                    name=function_name,
+                    name= f"{function_name}",
                     response={"error": f"Unknown function: {function_name}"},
                 )
             ],
@@ -33,7 +42,7 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
         role="tool",
         parts=[
             types.Part.from_function_response(
-                name=function_name,
+                name= f"{function_name}",
                 response={"result": function_result},
             )
         ],
