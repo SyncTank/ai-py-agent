@@ -13,6 +13,10 @@ function_dict = {
 
 # arg1 name and .args properties, verbose prints them
 def call_function(function_call_part: types.FunctionCall, verbose=False):
+    print("\n\n2")
+    print(function_call_part)
+    print("\n\n2")
+
     try:
         if verbose:
             print(f"Calling function: {function_call_part.name}({function_call_part.args})")
@@ -21,12 +25,15 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
     except Exception as error:
         print(f"Error: {error} fail calling function")
 
-    # attempt to run function pass the result down
     function_name = function_call_part.name
     function_result = ""
+    print("\n2")
+    if function_name:
+        print(function_dict[function_name]("calculator", function_call_part.args))
+    print("\n2")
     try:
         if function_name:
-            function_result = function_dict[function_name]("./calculator", function_call_part.args)
+            function_result = function_dict[function_name]("calculator", function_call_part.args)
     except Exception as error:
         return types.Content(
             role="tool",

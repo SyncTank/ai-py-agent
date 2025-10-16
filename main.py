@@ -38,9 +38,17 @@ def main():
 
     try: # nested check cause python
         if response.candidates:
+            print("\n1")
+            print(f"{response.candidates[0]}")
             if response.candidates[0].content:
+                print("\n1")
+                print(f"{response.candidates[0].content}")
                 if response.candidates[0].content.parts:
                     for item in response.candidates[0].content.parts:
+                        print("\n1")
+                        print(f"{response.candidates[0].content.parts}")
+                        print("\n1")
+                        print(f"{item}")
                         if item.function_call:
                             function_call_result = call_function(item.function_call, verbose_flags)
                             print(f"-> {function_call_result.parts}")
