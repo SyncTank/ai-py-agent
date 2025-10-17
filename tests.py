@@ -1,11 +1,32 @@
 # tests.py
 
 import unittest
+import subprocess
 from functions.get_files_info import *
 from functions.get_file_content import *
 from functions.write_file import *
 from functions.run_python_file import *
 
+class Test_main_call(unittest.TestCase): # should return a error string from function
+    def test_run_tests_base(self):
+        print(f"\nTEST 1\n")
+        assert_info = subprocess.run(["uv", "run", "main.py", '"run tests.py"', "--verbose"])
+        print(f"{assert_info}\n")
+
+    def test_run_get_content_lorem(self):
+        print(f"\nTEST 2\n")
+        assert_info = subprocess.run(["uv", "run", "main.py", '"get the contents of lorem.txt"', "--verbose"])
+        print(f"{assert_info}\n")
+
+    def test_run_write_file(self):
+        print(f"\nTEST 3\n")
+        assert_info = subprocess.run(["uv", "run", "main.py", '"create a new README.md file with the contents \'# calculator\'"', "--verbose"]) 
+        print(f"{assert_info}\n")
+
+    def test_run_list_files(self):
+        print(f"\nTEST 4\n")
+        assert_info = subprocess.run(["uv", "run", "main.py", '"what files are in the root?"', "--verbose"])  # should error
+        print(f"{assert_info}\n")
 
 class Test_run_py(): # should return a error string from function
     def test_run_py_base(self):

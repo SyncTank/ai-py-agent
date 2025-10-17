@@ -2,8 +2,6 @@ import os
 from google.genai import types
 
 def get_files_info(working_directory : str, directory: str =".")-> str:
-    print(working_directory)
-    print(directory)
     try :
         workDirectory : str = os.path.abspath(working_directory) # parent path where work is done
     except Exception as error:

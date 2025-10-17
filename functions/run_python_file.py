@@ -60,7 +60,7 @@ schema_run_python_file = types.FunctionDeclaration(
             ),
             "args": types.Schema(
                 type=types.Type.ARRAY,
-                description="A list of string arguments (e.g., ['--debug', '1']) to pass to the python file.",
+                description="A list/array of string optional flag arguments (e.g., ['--debug', '1']) to pass to the python file.",
                 items=types.Schema(
                     type=types.Type.STRING
                 )
