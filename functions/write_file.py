@@ -12,15 +12,15 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
     if not filePath.startswith(workPath):
         return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
 
-    if not os.path.exists(filePath):
+    fpath = filePath[:filePath.rfind('/')+1] 
+    if not os.path.exists(fpath):
         try :
-            os.makedirs(os.path.dirname(filePath), exist_ok=True)
+            os.makedirs(os.path.dirname(fpath), exist_ok=True)
         except Exception as error:
             return f'Error: {error} creating directory'
 
         if not os.path.isdir(filePath):
             return f'Error: {filePath} is a directory, and not a file'
-
     try :
         with open(filePath, "+w") as file:
             file.write(content)

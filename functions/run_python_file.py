@@ -21,16 +21,24 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
     if not filePath.endswith(".py"):
         return f'Error: "{file_path}" is not a python file.'
 
-    if len(args) == 0:
-        args.append(" ")
+    #if len(args) == 0:
+    #    args.append(" ")
 
     totalArgs = [f"{sys.executable}", f"{filePath}"]
-    for i in args:
-        totalArgs.append(i)
+    if args:
+        totalArgs += " ".join(args)
+
+    #args = " ".join(totalArgs)
+    #print(f"\n{totalArgs}\n")
 
     try: # args needs to be python main.py args
         process = subprocess.run(totalArgs, cwd=workPath, capture_output=True , timeout=globals.TIME_LIMIT, text=True, check=True )
-        results = f'STDOUT: {process.stdout}\nSTDERR: {process.stderr}'
+        results: str = ""
+        if process.stdout:
+            results += f'STDOUT: {process.stdout}'
+        if process.stderr:
+            results += f'\nSTDERR: {process.stderr}' 
+
         if process.returncode != 0:
             results += f'\nProcess exited with {process.returncode}'
         if len(process.stdout) < 2:

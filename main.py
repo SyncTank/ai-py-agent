@@ -37,21 +37,21 @@ def main():
     response = geneai(strprompt.strip(), client)
 
     try: # nested check cause python
-        if response.candidates:
-            if response.candidates[0].content:
-                if response.candidates[0].content.parts:
-                    for item in response.candidates[0].content.parts:
-                        print("\n1")
-                        print(f"{response.candidates[0].content.parts}")
-                        print("\n1")
-                        print(f"{item}")
-                        if item.function_call:
-                            function_call_result = call_function(item.function_call, verbose_flags)
-                            print(f"-> {function_call_result.parts}")
-                            #print(f"-> {function_call_result.parts[0].from_function_response().function_response.response}")
-                            #print(f"Calling function: {item.function_call.name}({item.function_call.args})")
-                        elif item.text:
-                            print(f"{item.text}")
+        if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
+            for item in response.candidates[0].content.parts:
+                #print("\n1")
+                #print(f"{response.candidates[0].content.parts}")
+                #print("\n1")
+                #print(f"{item}")
+                if item.function_call:
+                    function_call_result = call_function(item.function_call, verbose_flags)
+                    if function_call_result and function_call_result.parts and function_call_result.parts[0].function_response and function_call_result.parts[0].function_response.response:
+                        results_response = function_call_result.parts[0].function_response.response
+                        #results_name = function_call_result.parts[0].function_response.name
+                        #print(results_response)
+                        print(f"-> {results_response["result"]}")
+                    elif item.text:
+                        print(f"{item.text}")
 
         if response.usage_metadata is not None and verbose_flags == True:
             print(f"User prompt: {strprompt}")
