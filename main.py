@@ -36,30 +36,61 @@ def main():
 
     response = geneai(strprompt.strip(), client)
 
-    try: # nested check cause python
-        if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
-            for item in response.candidates[0].content.parts:
-                #print("\n1")
-                #print(f"{response.candidates[0].content.parts}")
-                #print("\n1")
-                #print(f"{item}")
-                if item.function_call:
-                    function_call_result = call_function(item.function_call, verbose_flags)
-                    if function_call_result and function_call_result.parts and function_call_result.parts[0].function_response and function_call_result.parts[0].function_response.response:
-                        results_response = function_call_result.parts[0].function_response.response
-                        #results_name = function_call_result.parts[0].function_response.name
-                        #print(results_response)
-                        print(f"-> {results_response["result"]}")
-                    elif item.text:
-                        print(f"{item.text}")
-
-        if response.usage_metadata is not None and verbose_flags == True:
-            print(f"User prompt: {strprompt}")
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-
-    except AttributeError as error:
+    try:
+        result = function_response_extract(response, verbose_flags)
+        if result :
+            print(result)
+    except Exception as error:
         print(f"Error: {error} Check the API")
+ 
+    if response.usage_metadata is not None and verbose_flags == True:
+        print(f"User prompt: {strprompt}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+
+
+def function_response_extract(response, verbose_flags):
+    #print(f"TEST \n {response} \n\n")
+    try:
+        if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
+            result_part = response.candidates and response.candidates[0].content and response.candidates[0].content.parts
+        else :
+            return "API no response"
+    except Exception as error:
+        return f"Error: {error} failed parts"
+
+    for item in result_part:
+        result_item = dict(item)
+        call = result_item["function_call"]
+        if call :
+            call_result = call_function(call, verbose_flags)
+        elif item.text:
+            return f"{item.text}"
+        else:
+            return f"AI did not call any function see response {result_item}"
+
+        print(f"CALL RESULT: \n {call_result}\n\n")
+
+        try:
+            if call_result and call_result.parts:
+                function_results = call_result.parts
+            else:
+                return f"Nothing was return from the call"
+        except Exception as error:
+            return f"Error: {error} failed to see call_results"
+ 
+        try:
+            for function_call in function_results:
+                response_call = dict(function_call)
+                print(f"response call {response_call}\n\n")
+                if response_call["function_response"]:
+                    print(response_call)
+                    response = response_call["function_response"]
+                    print(f"-> {response.response}")
+                else:
+                    return f"{response_call["text"]}"
+        except Exception as error:
+            print(f"Error: {error} failed at call_parts_result")
 
 def geneai(content : str, client):
     system_prompt = globals.SYS_PROMPT

@@ -21,40 +21,37 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
     if not filePath.endswith(".py"):
         return f'Error: "{file_path}" is not a python file.'
 
-    #if len(args) == 0:
-    #    args.append(" ")
-
-    totalArgs = [f"{sys.executable}", f"{filePath}"]
+    totalArgs = [sys.executable, filePath]
     if args:
-        totalArgs += " ".join(args)
+        totalArgs += args
 
-    #args = " ".join(totalArgs)
-    #print(f"\n{totalArgs}\n")
-
+    results: str = ""
     try: # args needs to be python main.py args
-        process = subprocess.run(totalArgs, cwd=workPath, capture_output=True , timeout=globals.TIME_LIMIT, text=True, check=True )
-        results: str = ""
+        process = subprocess.run(totalArgs, cwd=workPath, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=globals.TIME_LIMIT, text=True, check=True )
+
         if process.stdout:
-            results += f'STDOUT: {process.stdout}'
+            results += f'STDOUT: {process.stdout.strip()}'
+
         if process.stderr:
-            results += f'\nSTDERR: {process.stderr}' 
+            results += f'\nSTDERR: {process.stderr.strip()}' 
 
         if process.returncode != 0:
             results += f'\nProcess exited with {process.returncode}'
-        if len(process.stdout) < 2:
+
+        if len(results) < 2:
             return f'No output produced'
 
     except Exception as error:
         return f'Error: executing python file {error}'
 
-    if len(results) < 1:
+    if len(results) < 2:
         return f'No output produced'
 
     return results
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description="Runs a .py/python file specified by a path relative to the working directory, along with optional arguments.",
+    description="Runs a .py/python file specified by a path relative to the working directory, along with any optional args.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -68,12 +65,13 @@ schema_run_python_file = types.FunctionDeclaration(
             ),
             "args": types.Schema(
                 type=types.Type.ARRAY,
-                description="A list/array of string optional flag arguments (e.g., ['--debug', '1']) to pass to the python file.",
+                description="A optional list/array of string flags used to execute special arguments on call (e.g., ['--debug', '1']), defaults to empty list [].",
                 items=types.Schema(
                     type=types.Type.STRING
-                )
+                ),
+                default=[]
             ),
         },
-        required=["working_directory", "file_path"] # Added 'required' fields
+        required=["file_path"] # Added 'required' fields
     ),
 )

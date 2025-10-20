@@ -27,16 +27,12 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
         print(f"Error: {error} fail calling function")
 
     function_name = function_call_part.name
-    function_result = ""
-
-    #if function_name:
-    #    pass
-        #print(f"calculator {args}")
+    function_result: str = ""
 
     try:
         if function_name:
             #print(f"CALLING: {function_dict[function_name](**args)}")
-            function_result = function_dict[function_name](**args)
+            function_result += function_dict[function_name](**args)
     except Exception as error:
         return types.Content(
             role="tool",
@@ -47,7 +43,6 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
                 )
             ],
         )
-
     return types.Content(
         role="tool",
         parts=[
