@@ -69,7 +69,7 @@ def function_response_extract(response, verbose_flags):
         else:
             return f"AI did not call any function see response {result_item}"
 
-        print(f"CALL RESULT: \n {call_result}\n\n")
+        #print(f"CALL RESULT: \n {call_result}\n\n")
 
         try:
             if call_result and call_result.parts:
@@ -82,11 +82,10 @@ def function_response_extract(response, verbose_flags):
         try:
             for function_call in function_results:
                 response_call = dict(function_call)
-                print(f"response call {response_call}\n\n")
+                #print(f"response call {response_call}\n\n")
                 if response_call["function_response"]:
-                    print(response_call)
                     response = response_call["function_response"]
-                    print(f"-> {response.response}")
+                    print(f"-> {response.response["result"]}")
                 else:
                     return f"{response_call["text"]}"
         except Exception as error:

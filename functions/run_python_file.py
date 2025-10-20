@@ -51,7 +51,7 @@ def run_python_file(working_directory : str, file_path : str, args=[]) -> str:
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description="Runs a .py/python file specified by a path relative to the working directory, along with any optional args.",
+    description="Runs a .py/python file specified by a path relative to the working directory, along with a optional args list. args defaults to a empty list [], so run unless specified",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={

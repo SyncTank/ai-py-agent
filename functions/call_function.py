@@ -31,7 +31,6 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
 
     try:
         if function_name:
-            #print(f"CALLING: {function_dict[function_name](**args)}")
             function_result += function_dict[function_name](**args)
     except Exception as error:
         return types.Content(
