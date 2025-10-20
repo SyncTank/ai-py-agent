@@ -17,6 +17,11 @@ available_functions = types.Tool(
         schema_write_file,
     ]
 )
+system_prompt = globals.SYS_PROMPT
+configs = types.GenerateContentConfig(
+        tools=[available_functions],
+        system_instruction=system_prompt
+    )
 
 def main():
     load_dotenv()
@@ -34,10 +39,16 @@ def main():
         else:
             strprompt += (prompt + " ")
 
-    response = geneai(strprompt.strip(), client)
+    messages = [
+    types.Content(role="user", parts=[types.Part(text=strprompt.strip())]),
+    ]
 
+    response = geneai(client, messages)
+
+    messages = add_canditates(messages, response.candidates)
     try:
-        result = function_response_extract(response, verbose_flags)
+        print(f"{messages}\n\n")
+        result = function_response_extract(response, messages, verbose_flags)
         if result :
             print(result)
     except Exception as error:
@@ -49,7 +60,7 @@ def main():
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
 
-def function_response_extract(response, verbose_flags):
+def function_response_extract(response,messages, verbose_flags):
     #print(f"TEST \n {response} \n\n")
     try:
         if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
@@ -91,21 +102,20 @@ def function_response_extract(response, verbose_flags):
         except Exception as error:
             print(f"Error: {error} failed at call_parts_result")
 
-def geneai(content : str, client):
-    system_prompt = globals.SYS_PROMPT
-    messages = [
-    types.Content(role="user", parts=[types.Part(text=content)]),
-    ]
-    configs = types.GenerateContentConfig(
-            tools=[available_functions],
-            system_instruction=system_prompt
-        )
+def geneai(client, messages):
     response = client.models.generate_content(
         model='gemini-2.0-flash-001', 
         contents=messages,
         config=configs
     )
     return response
+
+def add_canditates(messages, response):
+    results: list = messages.copy()
+    for item in response:
+        results.append(item.content)
+    return results
+
 
 if __name__ == "__main__":
     main()
