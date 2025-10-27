@@ -8,6 +8,11 @@ from functions.write_file import *
 from functions.run_python_file import *
 
 class Test_main_call(unittest.TestCase): # should return a error string from function
+    def test_run_tests_multi(self):
+        print(f"\nTEST 1\n")
+        assert_info = subprocess.run(["uv", "run", "main.py", '"run tests.py"', "--verbose"])
+        print(f"{assert_info}\n")
+
     def test_run_tests_base(self):
         print(f"\nTEST 1\n")
         assert_info = subprocess.run(["uv", "run", "main.py", '"run tests.py"', "--verbose"])

@@ -42,22 +42,28 @@ def main():
     messages = [
     types.Content(role="user", parts=[types.Part(text=strprompt.strip())]),
     ]
+    
+    for _ in range(0, 19, 1):
+        response = geneai(client, messages)
+        if not response.text:
+            print(f"{response.text}")
+            break
+        print(f"RESPONSE : {response}\n\n")
+        messages = add_canditates(messages, response.candidates)
 
-    response = geneai(client, messages)
-
-    messages = add_canditates(messages, response.candidates)
-    try:
-        print(f"{messages}\n\n")
-        result = function_response_extract(response, messages, verbose_flags)
-        if result :
-            print(result)
-    except Exception as error:
-        print(f"Error: {error} Check the API")
+        try:
+            #print(f"\nMESSAGES : {messages}\n\n")
+            function_response_extract(response, messages, verbose_flags)
+            #result = function_response_extract(response, messages, verbose_flags)
+            #print(f"MESSAGES2: {messages}\n")
+            #print(f"RESULTS RESPONSES: {result}\n")
+        except Exception as error:
+            print(f"Error: {error} Check the API")
  
-    if response.usage_metadata is not None and verbose_flags == True:
-        print(f"User prompt: {strprompt}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    #if response.usage_metadata is not None and verbose_flags == True:
+    #    print(f"User prompt: {strprompt}")
+    #    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+    #    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
 
 def function_response_extract(response,messages, verbose_flags):
@@ -85,22 +91,28 @@ def function_response_extract(response,messages, verbose_flags):
         try:
             if call_result and call_result.parts:
                 function_results = call_result.parts
+                messages.append(types.Content(role="user", parts=call_result.parts ))
             else:
                 return f"Nothing was return from the call"
         except Exception as error:
             return f"Error: {error} failed to see call_results"
  
+        results_responses: list[str] = [] 
         try:
             for function_call in function_results:
                 response_call = dict(function_call)
                 #print(f"response call {response_call}\n\n")
                 if response_call["function_response"]:
                     response = response_call["function_response"]
+                    results_responses.append(f"-> {response.response["result"]}")
                     print(f"-> {response.response["result"]}")
                 else:
+                    results_responses.append(f"-> {response.response["result"]}")
                     return f"{response_call["text"]}"
         except Exception as error:
             print(f"Error: {error} failed at call_parts_result")
+
+        return "\n".join(results_responses)
 
 def geneai(client, messages):
     response = client.models.generate_content(
