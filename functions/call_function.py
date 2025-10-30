@@ -13,41 +13,40 @@ function_dict = {
 
 # arg1 name and .args properties, verbose prints them
 def call_function(function_call_part: types.FunctionCall, verbose=False):
-    args: dict = {}
-    if function_call_part.args:
-        args = function_call_part.args
-        args["working_directory"] = "calculator"
+    args: dict = {"working_directory" : "calculator"}
+
+    function_name = getattr(function_call_part, "name")
+    function_args = getattr(function_call_part, "args", None)
+
+    if function_args:
+        args.update(function_args) 
 
     try:
         if verbose:
-            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+            print(f"Calling function: {function_name}({args})")
         else:
-            print(f" - Calling function: {function_call_part.name}")
+            print(f" - Calling function: {function_name}")
     except Exception as error:
         print(f"Error: {error} fail calling function")
 
-    function_name = function_call_part.name
-    function_result: str = ""
-
     try:
-        if function_name:
-            function_result += function_dict[function_name](**args)
-    except Exception as error:
         return types.Content(
             role="tool",
             parts=[
                 types.Part.from_function_response(
                     name= f"{function_name}",
-                    response={"error": f"Unknown function: {function_name}"},
+                    response={"result": function_dict[function_name](**args)},
                 )
             ],
         )
-    return types.Content(
-        role="tool",
-        parts=[
-            types.Part.from_function_response(
-                name= f"{function_name}",
-                response={"result": function_result},
-            )
-        ],
-    )
+    except Exception as error:
+        return types.Content(
+            role="tool",
+            parts=[
+                types.Part.from_function_response(
+                    name=function_name or "Unknown",
+                    response={"error": f"Unknown function: {error}"},
+                )
+            ],
+        )
+
