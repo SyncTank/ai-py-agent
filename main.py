@@ -42,37 +42,40 @@ def main():
     messages = [
     types.Content(role="user", parts=[types.Part(text=strprompt.strip())]),
     ]
-    
+
+    prompt_token: int = 0
+    candidates_token: int = 0
+
     for _ in range(0, 19, 1):
 
         response = geneai(client, messages)
 
-        if not response.text:
+        if response and response.usage_metadata:
+            prompt_token += response.usage_metadata.prompt_token_count or 0
+            candidates_token += response.usage_metadata.candidates_token_count or 0
+
+        print(f"RESPONSE : {response}\n\n")
+
+        if not hasattr(response, 'text'):
             if messages and hasattr(messages[-1], 'parts') and messages[-1].parts:
                 final_part = messages[-1].parts[0]
-                if hasattr(final_part, 'text') and final_part.text:
-                    print(final_part.text)
-                else:
-                    print("No text found in final_part.")
-            else:
-                print("No valid parts found in last message.")
+                if hasattr(final_part, 'text'):
+                    print(getattr(final_part, 'text'))
             break
 
-        #print(f"RESPONSE : {response}\n\n")
         messages = add_canditates(messages, response.candidates)
-        #print(f"MESSAGES: {messages}\n\n")
 
         try:
-            #print(f"\nMESSAGES : {messages}\n\n")
             function_response_extract(response, messages, verbose_flags)
-            #print(f"RESULTS RESPONSES: {result}\n")
+            print(f"MESSAGES: {messages}\n\n")
         except Exception as error:
             print(f"Error: {error} Check the API")
  
-    #if response.usage_metadata is not None and verbose_flags == True:
-    #    print(f"User prompt: {strprompt}")
-    #    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    #    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    if verbose_flags == True:
+        print("")
+        print(f"User prompt: {strprompt}")
+        print(f"Prompt tokens: {prompt_token}")
+        print(f"Response tokens: {candidates_token}")
 
 def function_response_extract(response,messages, verbose_flags):
     try:
