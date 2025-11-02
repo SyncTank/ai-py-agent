@@ -12,15 +12,20 @@ The structure is designed to handle single or multiple actions to be executed on
 <li> Execute Python files with optional arguments</li>
 <li> Write or overwrite files</li>
 
-Key in .env
+<br>
+Keys is placed within .env file
+<br>
 Google API Key : `https://aistudio.google.com/u/1/apikey`
+<br>
 
 source : `.venv/bin/active`
 
-This python environment run with the uv<br>
-uv run tests.py
+The python environment is built with uv<br>
+Example : `uv run main.py how does the calculator render results to the console?`
+<br>
+Tests : `uv run tests.py`
 
 packages include: <br>
-`uv add google-genai=1.12.1`
+`uv add google-genai=1.12.1`<br>
 `uv add python-dotenv=1.1.0`
 
