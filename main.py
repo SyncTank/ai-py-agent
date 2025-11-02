@@ -47,27 +47,32 @@ def main():
     candidates_token: int = 0
 
     for _ in range(0, 19, 1):
-
+        #print("\n CALLING EXTRACT \n")
         response = geneai(client, messages)
 
         if response and response.usage_metadata:
             prompt_token += response.usage_metadata.prompt_token_count or 0
             candidates_token += response.usage_metadata.candidates_token_count or 0
 
-        print(f"RESPONSE : {response}\n\n")
+        #print(f"\n-> RESPONSE : \n{response}\n\n")
 
-        if not hasattr(response, 'text'):
-            if messages and hasattr(messages[-1], 'parts') and messages[-1].parts:
-                final_part = messages[-1].parts[0]
-                if hasattr(final_part, 'text'):
-                    print(getattr(final_part, 'text'))
+        #print(f"\n-> MESSAGES: \n{messages}\n\n")
+        if not response or response.candidates == None:
+            if messages[-1].parts:
+                print(f"\n{messages[-1].parts[0].text}")
             break
 
+        #print(f"\n-> ADDING CANDIDATES: \n{response.candidates}\n")
         messages = add_canditates(messages, response.candidates)
 
         try:
-            function_response_extract(response, messages, verbose_flags)
-            print(f"MESSAGES: {messages}\n\n")
+            #print(f"\n FUNCTION EXTRACT \n")
+            # the end_result is optional as its appended to the messages list
+            end_result = function_response_extract(response, messages, verbose_flags)
+            if end_result :
+                print(f"-> FAILURE : \n{end_result}")
+
+            #print(f"\n-> MESSAGES: \n{messages}\n\n")
         except Exception as error:
             print(f"Error: {error} Check the API")
  
@@ -78,51 +83,23 @@ def main():
         print(f"Response tokens: {candidates_token}")
 
 def function_response_extract(response,messages, verbose_flags):
-    try:
-        if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
-            result_part = response.candidates and response.candidates[0].content and response.candidates[0].content.parts
-        else :
-            return "API no response"
-    except Exception as error:
-        return f"Error: {error} failed parts"
-
-    for item in result_part:
-        result_item = dict(item)
-        call = result_item["function_call"]
-        if call :
-            call_result = call_function(call, verbose_flags)
-        elif item.text:
-            return f"{item.text}"
-        else:
-            return f"AI did not call any function see response {result_item}"
-
-        #print(f"CALL RESULT: \n {call_result}\n\n")
-
-        try:
-            if call_result and call_result.parts:
-                function_results = call_result.parts
-                messages.append(types.Content(role="user", parts=call_result.parts ))
+    if response and response.candidates:
+        for can in response.candidates:
+            if can.content.parts:
+                parts = can.content.parts
             else:
-                return f"Nothing was return from the call"
-        except Exception as error:
-            return f"Error: {error} failed to see call_results"
- 
-        results_responses: list[str] = [] 
-        try:
-            for function_call in function_results:
-                response_call = dict(function_call)
-                #print(f"response call {response_call}\n\n")
-                if response_call["function_response"]:
-                    response = response_call["function_response"]
-                    results_responses.append(f"-> {response.response["result"]}")
-                    print(f"-> {response.response["result"]}")
-                else:
-                    results_responses.append(f"-> {response.response["result"]}")
-                    return f"{response_call["text"]}"
-        except Exception as error:
-            print(f"Error: {error} failed at call_parts_result")
+                return f"Candidates is empty"
 
-        return "\n".join(results_responses)
+            for item in parts:
+                if hasattr(item, "function_call"):
+                    call = getattr(item, "function_call")
+                    if call:
+                        call_response : types.Content = call_function(call, verbose_flags)
+                        #print(f"-> CALL RESULT: \n {call_response}\n\n")
+                        if call_response and call_response.parts:
+                            messages.append(types.Content(role="user", parts=call_response.parts))
+                else:
+                    return f"NO FUNCTION CALL {item}"
 
 def geneai(client, messages):
     response = client.models.generate_content(
@@ -134,10 +111,10 @@ def geneai(client, messages):
 
 def add_canditates(messages, response):
     results: list = messages.copy()
-    for item in response:
+    iterable = list(response)
+    for item in iterable:
         results.append(item.content)
     return results
-
 
 if __name__ == "__main__":
     main()
