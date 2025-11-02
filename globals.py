@@ -1,6 +1,7 @@
 FILE_LIMIT: int = 50000
 READ_LIMIT: int = 10000
 TIME_LIMIT: int = 30
+TIME_OUT: int = 20
 SYS_PROMPT: str = """
 You are a helpful AI coding agent.
 

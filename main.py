@@ -7,7 +7,8 @@ from functions.get_files_info import *
 from functions.get_file_content import * 
 from functions.write_file import * 
 from functions.run_python_file import * 
-from functions.call_function import * 
+from functions.call_function import *
+from globals import TIME_OUT 
 
 available_functions = types.Tool(
     function_declarations=[
@@ -46,7 +47,7 @@ def main():
     prompt_token: int = 0
     candidates_token: int = 0
 
-    for _ in range(0, 19, 1):
+    for _ in range(0, TIME_OUT-1, 1):
         #print("\n CALLING EXTRACT \n")
         response = geneai(client, messages)
 
